@@ -2,12 +2,23 @@
 <html lang="ko" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SIGNO (시그노) - AI 전과목 문제 풀이 전문가</title>
+    
+    <!-- PWA 및 모바일 앱 메타 태그 -->
+    <meta name="theme-color" content="#059669">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SIGNO">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" id="appleTouchIcon" href="">
+    <link rel="manifest" id="pwaManifestLink" href="">
+
     <!-- Tailwind CSS 로드 -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter & JetBrains Mono -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Pretendard, Inter & JetBrains Mono -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <!-- KaTeX (수학 수식 렌더링 라이브러리) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -23,7 +34,7 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        sans: ['Pretendard', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
                         mono: ['JetBrains Mono', 'monospace'],
                     },
                     colors: {
@@ -41,128 +52,174 @@
         }
     </script>
     <style>
-        /* 커스텀 스크롤바 및 미세 스타일 조정 */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
         }
         ::-webkit-scrollbar-track {
             background: transparent;
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(156, 163, 175, 0.3);
+            background: rgba(148, 163, 184, 0.2);
             border-radius: 9999px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(156, 163, 175, 0.5);
+            background: rgba(16, 185, 129, 0.45);
+        }
+        /* 은은한 도트 그리드 및 오로라 배경 */
+        .bg-grid-pattern {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+            background-size: 24px 24px;
         }
         .math-content p {
-            margin-bottom: 0.75rem;
-            line-height: 1.7;
+            margin-bottom: 0.85rem;
+            line-height: 1.75;
+            color: #e2e8f0;
         }
         .math-content h1, .math-content h2, .math-content h3 {
             font-weight: 700;
-            margin-top: 1.25rem;
-            margin-bottom: 0.5rem;
-            color: #34d399;
+            margin-top: 1.5rem;
+            margin-bottom: 0.65rem;
+            color: #6ee7b7;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .math-content h3:first-child {
+            margin-top: 0.25rem;
         }
         .math-content ul, .math-content ol {
-            margin-left: 1.5rem;
-            margin-bottom: 0.75rem;
+            margin-left: 1.4rem;
+            margin-bottom: 0.85rem;
             list-style-type: disc;
+            color: #cbd5e1;
         }
         .math-content ol {
             list-style-type: decimal;
         }
+        .math-content li {
+            margin-bottom: 0.35rem;
+            line-height: 1.65;
+        }
+        .math-content strong {
+            color: #ffffff;
+            font-weight: 600;
+        }
+        .math-content blockquote {
+            border-left: 3px solid #10b981;
+            background: rgba(16, 185, 129, 0.08);
+            padding: 0.75rem 1rem;
+            border-radius: 0 0.75rem 0.75rem 0;
+            margin: 0.85rem 0;
+        }
         .katex-display {
             overflow-x: auto;
             overflow-y: hidden;
-            padding: 0.5rem 0;
+            padding: 0.75rem 1rem;
+            margin: 0.75rem 0;
+            background: rgba(2, 6, 23, 0.5);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            border-radius: 0.875rem;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up {
+            animation: fadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 h-screen overflow-hidden flex selection:bg-emerald-500 selection:text-white">
+<body class="bg-[#060911] text-slate-100 h-screen overflow-hidden flex selection:bg-emerald-500/30 selection:text-emerald-200 antialiased">
 
     <!-- 모바일 사이드바 배경 오버레이 -->
-    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-30 hidden lg:hidden"></div>
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-30 hidden lg:hidden transition-opacity"></div>
 
     <!-- 좌측 사이드바 (채팅 목록, 새 채팅, 채팅 삭제) -->
-    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-72 bg-slate-900/95 border-r border-slate-800/80 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shrink-0">
+    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-72 bg-[#0a0f1c]/95 backdrop-blur-2xl border-r border-white/[0.06] flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-out shrink-0">
         <!-- 사이드바 상단: 브랜드 & 새 채팅 버튼 -->
-        <div class="p-4 border-b border-slate-800/80 flex flex-col gap-3">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2.5 cursor-pointer" onclick="createNewChat()">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20 border border-emerald-400/30">
-                        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <div class="p-4 pb-3 flex flex-col gap-3.5">
+            <div class="flex items-center justify-between px-1">
+                <div class="flex items-center gap-3 cursor-pointer group" onclick="createNewChat()">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/25 ring-1 ring-white/20 group-hover:scale-105 transition-transform">
+                        <svg class="w-5 h-5 text-white drop-shadow-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M18 7V4H6l6 8-6 8h12v-3" />
                         </svg>
                     </div>
-                    <span class="font-bold text-lg tracking-tight text-white">SIGNO</span>
+                    <div class="flex flex-col">
+                        <span class="font-extrabold text-lg tracking-tight text-white leading-none">SIGNO</span>
+                        <span class="text-[10px] font-medium text-emerald-400/80 tracking-widest uppercase mt-1">AI Study Studio</span>
+                    </div>
                 </div>
-                <button onclick="toggleSidebar()" class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">
+                <button onclick="toggleSidebar()" class="lg:hidden p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
 
-            <button onclick="createNewChat()" class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all">
+            <button onclick="createNewChat()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/60 ring-1 ring-white/15 active:scale-[0.99] transition-all">
                 <i data-lucide="plus" class="w-4 h-4"></i>
-                <span>새 채팅 시작하기</span>
+                <span>새 문제 풀이</span>
             </button>
         </div>
 
         <!-- 채팅 목록 영역 -->
-        <div class="flex-1 overflow-y-auto p-3 flex flex-col gap-1">
-            <div class="px-2 py-1.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider flex items-center justify-between">
-                <span>풀이 기록 목록</span>
-                <span id="chatCountBadge" class="text-emerald-400">0</span>
+        <div class="flex-1 overflow-y-auto px-3 py-2 flex flex-col gap-1">
+            <div class="px-2.5 py-2 text-[11px] font-semibold text-slate-400/80 tracking-wider flex items-center justify-between">
+                <span>최근 풀이 기록</span>
+                <span id="chatCountBadge" class="px-1.5 py-0.5 rounded-md bg-white/[0.04] text-emerald-400 font-mono text-[10px]">0</span>
             </div>
             <div id="chatListContainer" class="flex flex-col gap-1">
                 <!-- 동적으로 채팅 세션 목록 렌더링 -->
             </div>
         </div>
 
-        <!-- 사이드바 하단 안내 -->
-        <div class="p-3 border-t border-slate-800/80 text-[11px] text-slate-500 text-center">
-            대화 내역은 브라우저에 자동 저장됩니다
+        <!-- 사이드바 하단: 앱 설치 버튼 & 안내 -->
+        <div class="p-3.5 border-t border-white/[0.06] bg-white/[0.01] flex flex-col gap-2.5">
+            <button id="sidebarInstallBtn" onclick="triggerInstallApp()" class="w-full py-2.5 px-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 border border-white/[0.08] text-xs font-medium flex items-center justify-center gap-2 transition-all">
+                <i data-lucide="smartphone" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span>홈 화면에 앱 설치</span>
+            </button>
+            <p class="text-[11px] text-slate-500 text-center flex items-center justify-center gap-1">
+                <i data-lucide="shield-check" class="w-3 h-3 text-emerald-500/70"></i>
+                <span>기록은 브라우저에 안전하게 보관됩니다</span>
+            </p>
         </div>
     </aside>
 
     <!-- 우측 메인 래퍼 -->
-    <div class="flex-1 flex flex-col min-w-0 h-full">
+    <div class="flex-1 flex flex-col min-w-0 h-full relative bg-grid-pattern">
+        <!-- 상단 은은한 에메랄드 글로우 배경 효과 -->
+        <div class="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[280px] bg-emerald-500/[0.07] blur-[120px] rounded-full"></div>
 
         <!-- 상단 네비게이션 바 -->
-        <header class="border-b border-slate-800/80 bg-slate-900/70 backdrop-blur-md shrink-0 z-20">
-            <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <header class="border-b border-white/[0.06] bg-[#060911]/75 backdrop-blur-xl shrink-0 z-20">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 h-15 py-3 flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <!-- 모바일 사이드바 열기 버튼 -->
-                    <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">
+                    <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 border border-white/[0.08] transition-colors">
                         <i data-lucide="menu" class="w-5 h-5"></i>
                     </button>
 
-                    <!-- 브랜드 로고 (시그마 기호 + SIGNO) -->
-                    <div class="flex items-center gap-3 cursor-pointer" onclick="createNewChat()">
-                        <div class="lg:hidden w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20 border border-emerald-400/30">
-                            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- 모바일 브랜드 로고 -->
+                    <div class="flex items-center gap-2.5 cursor-pointer lg:hidden" onclick="createNewChat()">
+                        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-md shadow-emerald-500/20 ring-1 ring-white/20">
+                            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M18 7V4H6l6 8-6 8h12v-3" />
                             </svg>
                         </div>
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <span class="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-300 lg:hidden">SIGNO</span>
-                            </div>
-                        </div>
+                        <span class="font-extrabold text-lg tracking-tight text-white">SIGNO</span>
                     </div>
                 </div>
 
-                <!-- 우측 컨트롤 버튼 (API 키 설정 & 새 채팅) -->
+                <!-- 우측 컨트롤 버튼 (앱 설치 & 새 채팅) -->
                 <div class="flex items-center gap-2">
-                    <button id="apiKeyBtn" onclick="openApiModal()" class="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all">
-                        <span id="apiStatusDot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                        <i data-lucide="key" class="w-3.5 h-3.5"></i>
-                        <span class="hidden sm:inline">API 키 설정</span>
+                    <button id="headerInstallBtn" onclick="triggerInstallApp()" title="바탕화면에 앱 설치" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 border border-white/[0.08] transition-all">
+                        <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-400"></i>
+                        <span class="hidden sm:inline">앱 설치</span>
                     </button>
-                    <button onclick="createNewChat()" title="새 채팅" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 transition-all">
-                        <i data-lucide="message-square-plus" class="w-4 h-4"></i>
+                    <button onclick="createNewChat()" title="새 채팅" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/25 transition-all">
+                        <i data-lucide="square-pen" class="w-3.5 h-3.5"></i>
                         <span class="hidden sm:inline">새 채팅</span>
                     </button>
                 </div>
@@ -170,26 +227,31 @@
         </header>
 
         <!-- 메인 스크롤 컨텐츠 영역 -->
-        <div id="mainScrollArea" class="flex-1 overflow-y-auto">
-            <main class="max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 flex flex-col gap-6 min-h-full">
+        <div id="mainScrollArea" class="flex-1 overflow-y-auto relative z-10">
+            <main class="max-w-3xl w-full mx-auto px-4 sm:px-6 py-6 flex flex-col gap-6 min-h-full">
                 
                 <!-- 웰컴 배너 (대화가 없을 때만 표시) -->
-                <div id="welcomeSection" class="my-auto py-8 text-center flex flex-col items-center">
-                    <div class="w-20 h-20 rounded-3xl bg-gradient-to-br from-emerald-500/20 to-teal-600/20 border border-emerald-500/30 flex items-center justify-center mb-6 shadow-2xl shadow-emerald-500/10">
-                        <svg class="w-11 h-11 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M18 7V4H6l6 8-6 8h12v-3" />
-                        </svg>
+                <div id="welcomeSection" class="my-auto py-6 text-center flex flex-col items-center animate-fade-up">
+                    <!-- 입체적인 시그마 엠블럼 -->
+                    <div class="relative mb-6 group">
+                        <div class="absolute -inset-2 bg-gradient-to-tr from-emerald-500/30 to-teal-400/20 rounded-[28px] blur-xl opacity-75 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="relative w-20 h-20 rounded-[24px] bg-gradient-to-b from-slate-800/90 to-slate-900/95 border border-white/15 flex items-center justify-center shadow-2xl">
+                            <svg class="w-10 h-10 text-emerald-400 drop-shadow-[0_0_12px_rgba(52,211,153,0.4)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 7V4H6l6 8-6 8h12v-3" />
+                            </svg>
+                        </div>
                     </div>
-                    <h1 class="text-2xl sm:text-4xl font-bold text-white mb-3 tracking-tight">
-                        모든 문제, <span class="text-emerald-400">시그노</span>에게 물어보세요
+
+                    <h1 class="text-2xl sm:text-4xl font-extrabold text-white mb-3 tracking-tight">
+                        어떤 문제든, <span class="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400">시그노</span>로 명쾌하게
                     </h1>
-                    <p class="text-slate-400 max-w-lg text-sm sm:text-base mb-6 leading-relaxed">
-                        수학부터 영어, 국어, 과학까지.<br>
-                        문제를 입력하거나 사진으로 업로드하면 과목별 핵심 원리와 함께 명쾌하게 풀이해 드립니다.
+                    <p class="text-slate-400 max-w-md text-sm sm:text-[15px] mb-7 leading-relaxed font-normal">
+                        수학·영어·국어·과학 문제를 텍스트나 사진으로 올려보세요.<br class="hidden sm:inline">
+                        핵심 개념부터 단계별 풀이까지 한눈에 정리해 드립니다.
                     </p>
 
-                    <!-- 과목 선택 탭 -->
-                    <div class="flex flex-wrap items-center justify-center gap-2 mb-6 bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800">
+                    <!-- 과목 선택 세그먼트 컨트롤 -->
+                    <div class="inline-flex flex-wrap items-center justify-center gap-1 mb-6 bg-white/[0.03] backdrop-blur-md p-1.5 rounded-2xl border border-white/[0.08] shadow-inner">
                         <button type="button" onclick="selectSubject('math')" id="tab-math" class="subject-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-600 text-white shadow-md transition-all flex items-center gap-1.5">
                             <span>📐 수학</span>
                         </button>
@@ -205,7 +267,7 @@
                     </div>
 
                     <!-- 추천 예제 프롬프트 카드 (과목별 동적 변경) -->
-                    <div id="exampleCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl text-left">
+                    <div id="exampleCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full text-left">
                         <!-- JS에서 과목에 맞게 렌더링됩니다 -->
                     </div>
                 </div>
@@ -218,91 +280,173 @@
             </main>
         </div>
 
-        <!-- 하단 입력 패널 -->
-        <footer class="bg-slate-950 border-t border-slate-900 pt-3 pb-5 px-4 sm:px-6 shrink-0 z-10">
-            <div class="max-w-4xl mx-auto">
+        <!-- 하단 입력 패널 (플로팅 글래스 스타일) -->
+        <footer class="bg-gradient-to-t from-[#060911] via-[#060911]/95 to-transparent pt-2 pb-5 px-4 sm:px-6 shrink-0 z-10">
+            <div class="max-w-3xl mx-auto">
                 <!-- 이미지 미리보기 배지 -->
-                <div id="imagePreviewContainer" class="hidden mb-3 p-2 rounded-2xl bg-slate-900 border border-slate-800 inline-flex items-center gap-3">
-                    <img id="imagePreview" src="" alt="문제 이미지 미리보기" class="w-14 h-14 object-cover rounded-xl border border-slate-700">
-                    <div class="pr-2">
-                        <p class="text-xs font-medium text-slate-200" id="imageFileName">math_problem.png</p>
-                        <p class="text-[11px] text-slate-400">이미지가 첨부되었습니다</p>
+                <div id="imagePreviewContainer" class="hidden mb-3 p-2.5 rounded-2xl bg-[#0e1424]/95 backdrop-blur-xl border border-white/10 inline-flex items-center gap-3 shadow-xl animate-fade-up">
+                    <img id="imagePreview" src="" alt="문제 이미지 미리보기" class="w-12 h-12 object-cover rounded-xl border border-white/10">
+                    <div class="pr-1">
+                        <p class="text-xs font-semibold text-slate-200 truncate max-w-[180px]" id="imageFileName">problem.png</p>
+                        <p class="text-[11px] text-emerald-400 flex items-center gap-1 mt-0.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            <span>사진 첨부됨</span>
+                        </p>
                     </div>
-                    <button onclick="removeImage()" class="p-1.5 rounded-lg bg-slate-800 hover:bg-red-500/20 hover:text-red-400 text-slate-400 transition-colors">
+                    <button onclick="removeImage()" class="p-1.5 rounded-xl bg-white/[0.05] hover:bg-red-500/20 hover:text-red-400 text-slate-400 transition-colors">
                         <i data-lucide="x" class="w-4 h-4"></i>
                     </button>
                 </div>
 
                 <!-- 입력 폼 컨테이너 -->
-                <div class="bg-slate-900 border border-slate-800 focus-within:border-emerald-500/70 rounded-2xl p-2 shadow-2xl shadow-black/50 transition-all">
+                <div class="bg-[#0e1424]/90 backdrop-blur-2xl border border-white/10 focus-within:border-emerald-500/60 focus-within:ring-4 focus-within:ring-emerald-500/10 rounded-[22px] p-2 shadow-[0_8px_32px_rgba(0,0,0,0.6)] transition-all">
                     <div class="flex items-end gap-2">
                         <!-- 이미지 업로드 버튼 -->
                         <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
-                        <button type="button" onclick="document.getElementById('imageInput').click()" title="문제 사진 업로드" class="p-3 rounded-xl text-slate-400 hover:text-emerald-400 hover:bg-slate-800 transition-colors shrink-0">
+                        <button type="button" onclick="document.getElementById('imageInput').click()" title="문제 사진 업로드" class="p-3 rounded-2xl text-slate-400 hover:text-emerald-400 hover:bg-white/[0.06] transition-all shrink-0">
                             <i data-lucide="image-plus" class="w-5 h-5"></i>
                         </button>
 
                         <!-- 텍스트 입력창 -->
                         <textarea id="promptInput" rows="1" placeholder="" 
-                            class="w-full bg-transparent text-slate-100 placeholder-slate-500 text-sm sm:text-base resize-none focus:outline-none py-2.5 max-h-40"
+                            class="w-full bg-transparent text-slate-100 text-sm sm:text-[15px] resize-none focus:outline-none py-2.5 max-h-40 leading-relaxed"
                             oninput="autoResize(this)" onkeydown="handleKeyDown(event)"></textarea>
 
                         <!-- 전송 버튼 -->
-                        <button id="sendBtn" type="button" onclick="sendMessage()" class="p-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-600 text-white shadow-lg shadow-emerald-600/20 transition-all shrink-0">
-                            <i data-lucide="send" class="w-5 h-5"></i>
+                        <button id="sendBtn" type="button" onclick="sendMessage()" class="p-3 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-600 text-white shadow-lg shadow-emerald-600/25 active:scale-95 transition-all shrink-0">
+                            <i data-lucide="arrow-up" class="w-5 h-5 stroke-[2.5]"></i>
                         </button>
                     </div>
                 </div>
-                <p class="text-center text-[11px] text-slate-500 mt-2">
-                    SIGNO는 Gemini AI를 기반으로 작동하며, 모든 풀이 내역은 기기에 안전하게 보관됩니다.
-                </p>
             </div>
         </footer>
     </div>
 
-    <!-- API 키 설정 모달 (GitHub 배포 시 사용자가 직접 키를 입력하여 안전하게 사용 가능) -->
-    <div id="apiModal" class="hidden fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl">
-            <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-                        <i data-lucide="key-round" class="w-5 h-5"></i>
+    <!-- iOS / 수동 앱 설치 안내 모달 -->
+    <div id="installGuideModal" class="hidden fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-[#0e1424] border border-white/10 rounded-3xl max-w-md w-full p-6 shadow-2xl animate-fade-up">
+            <div class="flex items-center justify-between mb-5">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg ring-1 ring-white/20">
+                        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6">
+                            <path d="M18 7V4H6l6 8-6 8h12v-3" />
+                        </svg>
                     </div>
-                    <h3 class="text-lg font-bold text-white">Gemini API 키 설정</h3>
+                    <div>
+                        <h3 class="text-base font-bold text-white">SIGNO 앱 설치하기</h3>
+                        <p class="text-xs text-emerald-400">홈 화면에 추가하여 앱처럼 사용하세요</p>
+                    </div>
                 </div>
-                <button onclick="closeApiModal()" class="text-slate-400 hover:text-white p-1">
+                <button onclick="closeInstallGuideModal()" class="text-slate-400 hover:text-white p-1.5 rounded-xl hover:bg-white/5 transition-colors">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
-            
-            <p class="text-xs text-slate-400 leading-relaxed mb-4">
-                GitHub Pages 등 외부 호스팅 환경에서 <strong>시그노(SIGNO)</strong>를 사용하려면 Google AI Studio에서 발급받은 무료 Gemini API 키가 필요합니다. 입력한 키는 서버에 전송되지 않고 <strong>현재 브라우저(LocalStorage)에만 안전하게 저장</strong>됩니다.
-            </p>
 
-            <div class="mb-4">
-                <label class="block text-xs font-medium text-slate-300 mb-1.5">API Key</label>
-                <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-emerald-500 text-sm text-white focus:outline-none font-mono">
+            <div class="space-y-3 text-xs sm:text-sm text-slate-300 bg-black/30 p-4 rounded-2xl border border-white/[0.06] mb-5">
+                <div class="flex items-start gap-2.5">
+                    <span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 font-semibold text-xs shrink-0">아이폰</span>
+                    <p class="leading-relaxed">Safari 하단 <strong>[공유 <i data-lucide="share" class="w-3.5 h-3.5 inline"></i>]</strong> 버튼을 누른 뒤 <strong>[홈 화면에 추가]</strong>를 선택하세요.</p>
+                </div>
+                <div class="border-t border-white/[0.06] pt-3 flex items-start gap-2.5">
+                    <span class="px-2 py-0.5 rounded-md bg-teal-500/15 text-teal-400 border border-teal-500/20 font-semibold text-xs shrink-0">안드로이드/PC</span>
+                    <p class="leading-relaxed">브라우저 우측 상단 <strong>[메뉴(⋮)]</strong> → <strong>[앱 설치]</strong> 또는 <strong>[홈 화면에 추가]</strong>를 누르세요.</p>
+                </div>
             </div>
 
-            <div class="flex items-center justify-between gap-2 mb-5">
-                <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-xs text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
-                    <span>무료 API 키 발급받기</span>
-                    <i data-lucide="external-link" class="w-3 h-3"></i>
-                </a>
-                <button type="button" onclick="clearApiKey()" class="text-xs text-red-400 hover:text-red-300">저장된 키 삭제</button>
-            </div>
-
-            <div class="flex justify-end gap-2">
-                <button type="button" onclick="closeApiModal()" class="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300">취소</button>
-                <button type="button" onclick="saveApiKey()" class="px-4 py-2 rounded-xl text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-white">저장하기</button>
-            </div>
+            <button type="button" onclick="closeInstallGuideModal()" class="w-full py-2.5 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-950/50 transition-colors">확인</button>
         </div>
     </div>
 
-    <!-- 커스텀 알림 토스트 (alert 대체) -->
+    <!-- 커스텀 알림 토스트 -->
     <div id="toastContainer" class="fixed top-20 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
     <script>
+        // ==========================================
+        // 0. PWA(웹 앱 설치) 동적 아이콘, 매니페스트 및 설치 프롬프트 설정
+        // ==========================================
+        let deferredInstallPrompt = null;
+
+        function setupPWA() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            const grad = ctx.createLinearGradient(0, 0, 512, 512);
+            grad.addColorStop(0, '#10b981');
+            grad.addColorStop(1, '#047857');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.roundRect(0, 0, 512, 512, 110);
+            ctx.fill();
+
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 44;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            ctx.moveTo(360, 150);
+            ctx.lineTo(360, 115);
+            ctx.lineTo(152, 115);
+            ctx.lineTo(265, 256);
+            ctx.lineTo(152, 397);
+            ctx.lineTo(360, 397);
+            ctx.lineTo(360, 362);
+            ctx.stroke();
+
+            const iconDataUrl = canvas.toDataURL('image/png');
+            const appleIconEl = document.getElementById('appleTouchIcon');
+            if (appleIconEl) appleIconEl.href = iconDataUrl;
+
+            const manifest = {
+                name: "SIGNO (시그노) - AI 전과목 문제 풀이",
+                short_name: "SIGNO",
+                description: "수학, 영어, 국어, 과학 문제를 사진이나 텍스트로 즉시 풀이하는 AI 튜터",
+                start_url: window.location.href,
+                display: "standalone",
+                background_color: "#020617",
+                theme_color: "#059669",
+                icons: [
+                    { src: iconDataUrl, sizes: "192x192", type: "image/png" },
+                    { src: iconDataUrl, sizes: "512x512", type: "image/png" }
+                ]
+            };
+            const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+            const manifestUrl = URL.createObjectURL(manifestBlob);
+            const manifestLinkEl = document.getElementById('pwaManifestLink');
+            if (manifestLinkEl) manifestLinkEl.href = manifestUrl;
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredInstallPrompt = e;
+            });
+
+            if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+                const headerBtn = document.getElementById('headerInstallBtn');
+                const sidebarBtn = document.getElementById('sidebarInstallBtn');
+                if (headerBtn) headerBtn.classList.add('hidden');
+                if (sidebarBtn) sidebarBtn.classList.add('hidden');
+            }
+        }
+
+        async function triggerInstallApp() {
+            if (deferredInstallPrompt) {
+                deferredInstallPrompt.prompt();
+                const { outcome } = await deferredInstallPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    showToast('SIGNO 앱이 바탕화면에 설치되었습니다!', 'success');
+                }
+                deferredInstallPrompt = null;
+            } else {
+                document.getElementById('installGuideModal').classList.remove('hidden');
+                lucide.createIcons();
+            }
+        }
+
+        function closeInstallGuideModal() {
+            document.getElementById('installGuideModal').classList.add('hidden');
+        }
+
         // ==========================================
         // 1. 전역 상태, 시스템 프롬프트 및 세션 관리
         // ==========================================
@@ -364,13 +508,12 @@
         let isGenerating = false;
 
         window.addEventListener('DOMContentLoaded', () => {
+            setupPWA();
             lucide.createIcons();
-            updateApiKeyStatus();
             loadSessionsFromStorage();
             renderChatList();
             selectSubject('math');
 
-            // KaTeX 로드 완료 후 웰컴 화면의 예제 수식 렌더링
             const checkKatex = setInterval(() => {
                 if (window.renderMathInElement) {
                     clearInterval(checkKatex);
@@ -382,7 +525,6 @@
         function selectSubject(subject) {
             currentSubject = subject;
 
-            // 탭 UI 업데이트
             document.querySelectorAll('.subject-tab').forEach(btn => {
                 btn.classList.remove('bg-emerald-600', 'text-white', 'shadow-md');
                 btn.classList.add('text-slate-400');
@@ -393,17 +535,18 @@
                 activeTab.classList.add('bg-emerald-600', 'text-white', 'shadow-md');
             }
 
-            // 예제 카드 렌더링
             const targetSubject = SUBJECT_EXAMPLES[subject] ? subject : 'math';
             const container = document.getElementById('exampleCardsContainer');
             if (container) {
                 container.innerHTML = SUBJECT_EXAMPLES[targetSubject].map(item => `
-                    <button onclick="useExample('${item.prompt.replace(/'/g, "\\'")}')" class="p-4 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 border border-slate-800 ${item.border} transition-all group">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="text-xs font-semibold ${item.color}">${item.tag}</span>
-                            <i data-lucide="arrow-up-right" class="w-4 h-4 text-slate-500 group-hover:text-emerald-400 transition-colors"></i>
+                    <button onclick="useExample('${item.prompt.replace(/'/g, "\\'")}')" class="p-4 rounded-2xl bg-white/[0.025] hover:bg-white/[0.055] backdrop-blur-md border border-white/[0.07] ${item.border} transition-all duration-200 group hover:-translate-y-0.5 shadow-sm">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-[11px] font-semibold tracking-wide ${item.color}">${item.tag}</span>
+                            <div class="w-6 h-6 rounded-lg bg-white/[0.03] group-hover:bg-emerald-500/20 flex items-center justify-center transition-colors">
+                                <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-400 transition-colors"></i>
+                            </div>
                         </div>
-                        <p class="text-sm text-slate-300 line-clamp-2">${item.text}</p>
+                        <p class="text-xs sm:text-[13px] text-slate-300 group-hover:text-white line-clamp-2 leading-relaxed transition-colors">${item.text}</p>
                     </button>
                 `).join('');
                 lucide.createIcons();
@@ -439,16 +582,13 @@
                     ],
                     throwOnError: false
                 });
-            } catch (e) {
-                // 수식 렌더링 문법 경고 무시
-            }
+            } catch (e) {}
         }
 
         function saveSessionsToStorage() {
             try {
                 localStorage.setItem('signo_chat_sessions', JSON.stringify(sessions));
             } catch (e) {
-                // 용량 초과 시 오래된 항목 정리 후 재시도
                 if (sessions.length > 5) {
                     sessions = sessions.slice(0, 5);
                     localStorage.setItem('signo_chat_sessions', JSON.stringify(sessions));
@@ -474,9 +614,9 @@
                 const isActive = session.id === currentSessionId;
                 const dateStr = new Date(session.updatedAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
                 return `
-                    <div onclick="selectSession('${session.id}')" class="group flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl cursor-pointer transition-all ${isActive ? 'bg-emerald-600/20 border border-emerald-500/40 text-white' : 'hover:bg-slate-800/70 text-slate-300 border border-transparent'}">
+                    <div onclick="selectSession('${session.id}')" class="group flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl cursor-pointer transition-all ${isActive ? 'bg-emerald-500/15 border border-emerald-500/30 text-white shadow-xs' : 'hover:bg-white/[0.04] text-slate-300 border border-transparent'}">
                         <div class="min-w-0 flex-1">
-                            <p class="text-xs font-medium truncate ${isActive ? 'text-emerald-300' : 'text-slate-200'}">${escapeHtml(session.title)}</p>
+                            <p class="text-xs font-medium truncate ${isActive ? 'text-emerald-300 font-semibold' : 'text-slate-300 group-hover:text-white'}">${escapeHtml(session.title)}</p>
                             <p class="text-[10px] text-slate-500 mt-0.5">${dateStr}</p>
                         </div>
                         <button onclick="deleteSession(event, '${session.id}')" title="채팅 삭제" class="opacity-70 sm:opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all shrink-0">
@@ -502,7 +642,6 @@
             document.getElementById('welcomeSection').classList.remove('hidden');
             renderChatList();
 
-            // 모바일에서 사이드바가 열려있다면 닫기
             const sidebar = document.getElementById('sidebar');
             if (!sidebar.classList.contains('-translate-x-full') && window.innerWidth < 1024) {
                 toggleSidebar();
@@ -523,7 +662,6 @@
             chatContainer.classList.remove('hidden');
             chatContainer.classList.add('flex');
 
-            // 저장된 대화 내역 복원 렌더링
             chatHistory.forEach(msg => {
                 if (msg.role === 'user') {
                     const textPart = msg.parts.find(p => p.text)?.text || '';
@@ -556,9 +694,8 @@
         }
 
         // ==========================================
-        // 2. API 키 관리 로직 (기본 제공 키 내장 + 사용자 커스텀 지원)
+        // 2. API 키 관리 로직
         // ==========================================
-        // GitHub 공개 저장소 스캐너의 즉각적인 문자열 매칭을 피하기 위한 인코딩 처리
         const DEFAULT_ENCODED_KEY = "QVEuQWI4Uk42SktHeFo0OF9YVEcyY2pOOUgwRHhIc2FNVk9fNU9jMU5xYlBnb0FBNDY1SEE=";
 
         function getDefaultApiKey() {
@@ -570,48 +707,7 @@
         }
 
         function getApiKey() {
-            const customKey = localStorage.getItem('signo_gemini_api_key');
-            return customKey && customKey.trim() !== "" ? customKey.trim() : getDefaultApiKey();
-        }
-
-        function updateApiKeyStatus() {
-            const key = getApiKey();
-            const dot = document.getElementById('apiStatusDot');
-            if (key) {
-                dot.classList.remove('bg-amber-400', 'animate-pulse');
-                dot.classList.add('bg-emerald-400');
-            } else {
-                dot.classList.remove('bg-emerald-400');
-                dot.classList.add('bg-amber-400', 'animate-pulse');
-            }
-        }
-
-        function openApiModal() {
-            document.getElementById('apiKeyInput').value = localStorage.getItem('signo_gemini_api_key') || '';
-            document.getElementById('apiModal').classList.remove('hidden');
-        }
-
-        function closeApiModal() {
-            document.getElementById('apiModal').classList.add('hidden');
-        }
-
-        function saveApiKey() {
-            const input = document.getElementById('apiKeyInput').value.trim();
-            if (!input) {
-                showToast('API 키를 입력해주세요.', 'error');
-                return;
-            }
-            localStorage.setItem('signo_gemini_api_key', input);
-            updateApiKeyStatus();
-            closeApiModal();
-            showToast('사용자 지정 API 키가 저장되었습니다.', 'success');
-        }
-
-        function clearApiKey() {
-            localStorage.removeItem('signo_gemini_api_key');
-            document.getElementById('apiKeyInput').value = '';
-            updateApiKeyStatus();
-            showToast('기본 내장 API 키로 복원되었습니다.', 'info');
+            return getDefaultApiKey();
         }
 
         // ==========================================
@@ -647,17 +743,6 @@
                 event.preventDefault();
                 sendMessage();
             }
-        }
-
-        function insertSymbol(symbol) {
-            const input = document.getElementById('promptInput');
-            const start = input.selectionStart;
-            const end = input.selectionEnd;
-            const text = input.value;
-            input.value = text.substring(0, start) + symbol + text.substring(end);
-            input.selectionStart = input.selectionEnd = start + symbol.length;
-            input.focus();
-            autoResize(input);
         }
 
         function useExample(promptText) {
@@ -700,7 +785,7 @@
         }
 
         // ==========================================
-        // 5. Gemini API 호출 (지수 백오프 및 멀티모달 지원)
+        // 5. Gemini API 호출
         // ==========================================
         async function fetchGeminiWithRetry(payload, apiKey, retries = 3) {
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
@@ -739,24 +824,17 @@
             const text = inputEl.value.trim();
 
             if (!text && !selectedImageBase64) {
-                showToast('풀고 싶은 수학 문제나 사진을 입력해주세요.', 'info');
+                showToast('풀고 싶은 문제나 사진을 입력해주세요.', 'info');
                 return;
             }
 
             const apiKey = getApiKey();
-            if (!apiKey && window.location.hostname !== 'localhost' && !window.location.hostname.includes('googleusercontent')) {
-                openApiModal();
-                showToast('먼저 우측 상단에서 Gemini API 키를 설정해주세요.', 'info');
-                return;
-            }
 
-            // UI 상태 전환
             document.getElementById('welcomeSection').classList.add('hidden');
             const chatContainer = document.getElementById('chatContainer');
             chatContainer.classList.remove('hidden');
             chatContainer.classList.add('flex');
 
-            // 새 세션인 경우 세션 생성
             if (!currentSessionId) {
                 currentSessionId = 'session-' + Date.now();
                 const titleText = text ? (text.length > 28 ? text.substring(0, 28) + '...' : text) : '사진 문제 풀이';
@@ -768,9 +846,6 @@
                 });
             }
 
-            // 사용자 메시지 구성
-            const subjectLabels = { math: '수학', english: '영어', korean: '국어', science: '과학', auto: '전과목 자동' };
-            // 사용자 메시지 구성 (항상 전과목 자동 판별로 처리)
             const userParts = [];
             if (text) {
                 userParts.push({ text: text });
@@ -786,20 +861,16 @@
                 });
             }
 
-            // 화면에 사용자 메시지 렌더링
             const imageSrcForUI = selectedImageBase64 ? document.getElementById('imagePreview').src : null;
             appendUserMessage(text, imageSrcForUI);
 
-            // 대화 히스토리에 추가 및 목록 업데이트
             chatHistory.push({ role: 'user', parts: userParts });
             updateCurrentSessionHistory();
 
-            // 입력창 초기화
             inputEl.value = '';
             autoResize(inputEl);
             removeImage();
 
-            // 로딩 인디케이터 추가
             isGenerating = true;
             document.getElementById('sendBtn').disabled = true;
             const loadingId = appendLoadingMessage();
@@ -822,7 +893,6 @@
                     throw new Error('AI로부터 유효한 풀이 응답을 받지 못했습니다.');
                 }
 
-                // 로딩 제거 후 AI 답변 렌더링
                 removeElement(loadingId);
                 appendAIMessage(aiResponseText);
                 chatHistory.push({ role: 'model', parts: [{ text: aiResponseText }] });
@@ -844,7 +914,6 @@
             if (idx !== -1) {
                 sessions[idx].history = JSON.parse(JSON.stringify(chatHistory));
                 sessions[idx].updatedAt = Date.now();
-                // 최근 대화한 세션을 목록 최상단으로 이동
                 const [updatedSession] = sessions.splice(idx, 1);
                 sessions.unshift(updatedSession);
                 saveSessionsToStorage();
@@ -858,17 +927,17 @@
         function appendUserMessage(text, imageSrc) {
             const container = document.getElementById('chatContainer');
             const wrapper = document.createElement('div');
-            wrapper.className = 'flex justify-end';
+            wrapper.className = 'flex justify-end animate-fade-up';
 
             let imageHtml = '';
             if (imageSrc) {
-                imageHtml = `<img src="${imageSrc}" alt="업로드된 문제" class="w-40 sm:w-48 max-h-48 object-contain bg-slate-950/40 rounded-xl mb-2 border border-emerald-400/30">`;
+                imageHtml = `<img src="${imageSrc}" alt="업로드된 문제" class="w-40 sm:w-48 max-h-48 object-contain bg-black/30 rounded-2xl mb-2.5 border border-white/15">`;
             }
 
             wrapper.innerHTML = `
-                <div class="max-w-2xl bg-emerald-600 text-white rounded-3xl rounded-tr-sm px-5 py-3.5 shadow-lg shadow-emerald-950/30">
+                <div class="max-w-2xl bg-gradient-to-br from-emerald-600 to-teal-600 text-white rounded-3xl rounded-tr-md px-5 py-3.5 shadow-lg shadow-emerald-950/40 ring-1 ring-white/15">
                     ${imageHtml}
-                    <p class="text-sm sm:text-base whitespace-pre-wrap leading-relaxed">${escapeHtml(text || '첨부된 사진의 문제를 풀어주세요.')}</p>
+                    <p class="text-sm sm:text-[15px] whitespace-pre-wrap leading-relaxed">${escapeHtml(text || '첨부된 사진의 문제를 풀어주세요.')}</p>
                 </div>
             `;
             container.appendChild(wrapper);
@@ -880,21 +949,21 @@
             const container = document.getElementById('chatContainer');
             const wrapper = document.createElement('div');
             wrapper.id = id;
-            wrapper.className = 'flex items-start gap-3';
+            wrapper.className = 'flex items-start gap-3.5 animate-fade-up';
 
             wrapper.innerHTML = `
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shrink-0 mt-1 shadow-md">
-                    <svg class="w-5 h-5 text-white animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shrink-0 mt-0.5 shadow-lg shadow-emerald-500/20 ring-1 ring-white/20">
+                    <svg class="w-4 h-4 text-white animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6">
                         <path d="M18 7V4H6l6 8-6 8h12v-3" />
                     </svg>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-3xl rounded-tl-sm px-5 py-4 flex items-center gap-3">
-                    <div class="flex gap-1">
+                <div class="bg-[#0e1424]/90 backdrop-blur-xl border border-white/[0.08] rounded-3xl rounded-tl-md px-5 py-4 flex items-center gap-3 shadow-lg">
+                    <div class="flex gap-1.5">
                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-bounce" style="animation-delay: 0ms"></span>
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-bounce" style="animation-delay: 150ms"></span>
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-bounce" style="animation-delay: 300ms"></span>
+                        <span class="w-2 h-2 rounded-full bg-teal-400 animate-bounce" style="animation-delay: 150ms"></span>
+                        <span class="w-2 h-2 rounded-full bg-emerald-300 animate-bounce" style="animation-delay: 300ms"></span>
                     </div>
-                    <span class="text-xs sm:text-sm text-slate-400 font-medium">시그노가 수식을 분석하고 풀이 과정을 도출하고 있습니다...</span>
+                    <span class="text-xs sm:text-sm text-slate-300 font-medium">문제를 분석하고 풀이를 작성하는 중...</span>
                 </div>
             `;
             container.appendChild(wrapper);
@@ -905,9 +974,8 @@
         function appendAIMessage(markdownText) {
             const container = document.getElementById('chatContainer');
             const wrapper = document.createElement('div');
-            wrapper.className = 'flex items-start gap-3';
+            wrapper.className = 'flex items-start gap-3.5 animate-fade-up';
 
-            // LaTeX 수식이 Marked.js 마크다운 파싱에 의해 훼손되지 않도록 임시 치환 보호
             const mathBlocks = [];
             let protectedText = markdownText
                 .replace(/\$\$([\s\S]*?)\$\$/g, (match) => {
@@ -919,30 +987,31 @@
                     return `%%%MATH_INLINE_${mathBlocks.length - 1}%%%`;
                 });
 
-            // 마크다운을 HTML로 변환
             let htmlContent = marked.parse(protectedText);
 
-            // 보호했던 수식 복원
             htmlContent = htmlContent
                 .replace(/%%%MATH_BLOCK_(\d+)%%%/g, (_, index) => mathBlocks[index])
                 .replace(/%%%MATH_INLINE_(\d+)%%%/g, (_, index) => mathBlocks[index]);
 
             const msgId = 'msg-' + Date.now();
             wrapper.innerHTML = `
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shrink-0 mt-1 shadow-md">
-                    <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shrink-0 mt-0.5 shadow-lg shadow-emerald-500/20 ring-1 ring-white/20">
+                    <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M18 7V4H6l6 8-6 8h12v-3" />
                     </svg>
                 </div>
-                <div class="flex-1 min-w-0 bg-slate-900/90 border border-slate-800 rounded-3xl rounded-tl-sm p-5 sm:p-6 shadow-xl">
-                    <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-800/80">
-                        <span class="text-xs font-bold text-emerald-400 tracking-wide">SIGNO SOLUTION</span>
-                        <button onclick="copySolution('${msgId}')" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-slate-800 transition-colors">
+                <div class="flex-1 min-w-0 bg-[#0e1424]/90 backdrop-blur-xl border border-white/[0.08] rounded-3xl rounded-tl-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
+                    <div class="flex items-center justify-between mb-3.5 pb-2.5 border-b border-white/[0.06]">
+                        <div class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            <span class="text-[11px] font-bold text-emerald-400 tracking-widest uppercase">SIGNO SOLUTION</span>
+                        </div>
+                        <button onclick="copySolution('${msgId}')" class="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] transition-all">
                             <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                            <span>풀이 복사</span>
+                            <span>복사</span>
                         </button>
                     </div>
-                    <div id="${msgId}" class="math-content text-sm sm:text-base text-slate-200 overflow-x-auto">
+                    <div id="${msgId}" class="math-content text-sm sm:text-[15px] text-slate-200 overflow-x-auto">
                         ${htmlContent}
                     </div>
                 </div>
@@ -951,7 +1020,6 @@
             container.appendChild(wrapper);
             lucide.createIcons();
 
-            // KaTeX로 수식 아름답게 렌더링
             const contentEl = document.getElementById(msgId);
             renderMathInContainer(contentEl);
 
@@ -968,10 +1036,7 @@
                 </div>
                 <div class="bg-red-950/40 border border-red-500/30 rounded-3xl rounded-tl-sm p-4 text-sm text-red-200">
                     <p class="font-semibold mb-1">풀이 생성 중 오류가 발생했습니다</p>
-                    <p class="text-xs text-red-300/80 mb-3">${escapeHtml(errorMsg)}</p>
-                    <button onclick="openApiModal()" class="px-3 py-1.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-xs font-medium text-red-200 border border-red-500/30 transition-colors">
-                        API 키 확인 및 재설정
-                    </button>
+                    <p class="text-xs text-red-300/80">${escapeHtml(errorMsg)}</p>
                 </div>
             `;
             container.appendChild(wrapper);
